@@ -1,0 +1,20 @@
+{
+  "name": "strapi-provider-cloudflare-r2-custom",
+  "version": "0.0.1",
+  "description": "Strapi Cloudflare R2+CDN provider for strapi upload",
+  "strapi": {
+    "name": "strapi-provider-cloudflare-r2-custom",
+    "description": "Use Cloudflare R2 in combination with the Cloudflare CDN as your upload provider",
+    "kind": "provider"
+  },
+  "main": "./lib/index.js",
+  "directories": {
+    "lib": "./lib"
+  },
+  "dependencies": {
+    "aws-sdk": "2.1692.0"
+  },
+  "peerDependencies": {
+    "@strapi/strapi": "5.17.0"
+  }
+}
