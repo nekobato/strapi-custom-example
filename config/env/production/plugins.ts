@@ -1,7 +1,7 @@
 export default ({ env }) => ({
   upload: {
     config: {
-      provider: "strapi-provider-cloudflare-r2-custom",
+      provider: "strapi-provider-cloudflare-r2",
       providerOptions: {
         accessKeyId: env("CF_ACCESS_KEY_ID"),
         secretAccessKey: env("CF_ACCESS_SECRET"),
