@@ -1,0 +1,14 @@
+{
+  "kind": "collectionType",
+  "collectionName": "media_products_cta_sections",
+  "info": {
+    "singularName": "media-products-cta-section",
+    "pluralName": "media-products-cta-sections",
+    "displayName": "MediaProductsCtaSection"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {}
+}

@@ -1,0 +1,14 @@
+{
+  "kind": "collectionType",
+  "collectionName": "simple_image_link_on_rich_texts",
+  "info": {
+    "singularName": "simple-image-link-on-rich-text",
+    "pluralName": "simple-image-link-on-rich-texts",
+    "displayName": "SimpleImageLinkOnRichText"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {}
+}

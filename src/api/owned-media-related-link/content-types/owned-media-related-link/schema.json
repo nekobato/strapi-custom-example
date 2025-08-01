@@ -1,0 +1,14 @@
+{
+  "kind": "collectionType",
+  "collectionName": "owned_media_related_links",
+  "info": {
+    "singularName": "owned-media-related-link",
+    "pluralName": "owned-media-related-links",
+    "displayName": "OwnedMediaRelatedLink"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {}
+}

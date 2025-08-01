@@ -1,0 +1,14 @@
+{
+  "kind": "collectionType",
+  "collectionName": "media_notes",
+  "info": {
+    "singularName": "media-note",
+    "pluralName": "media-notes",
+    "displayName": "MediaNote"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {}
+}

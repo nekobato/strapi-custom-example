@@ -1,0 +1,14 @@
+{
+  "kind": "collectionType",
+  "collectionName": "related_links",
+  "info": {
+    "singularName": "related-link",
+    "pluralName": "related-links",
+    "displayName": "RelatedLink"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {}
+}

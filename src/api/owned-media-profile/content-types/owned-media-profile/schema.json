@@ -1,0 +1,14 @@
+{
+  "kind": "collectionType",
+  "collectionName": "owned_media_profiles",
+  "info": {
+    "singularName": "owned-media-profile",
+    "pluralName": "owned-media-profiles",
+    "displayName": "OwnedMediaProfile"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {}
+}

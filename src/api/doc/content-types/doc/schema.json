@@ -1,10 +1,10 @@
 {
   "kind": "collectionType",
-  "collectionName": "categories",
+  "collectionName": "docs",
   "info": {
-    "singularName": "category",
-    "pluralName": "categories",
-    "displayName": "Category"
+    "singularName": "doc",
+    "pluralName": "docs",
+    "displayName": "Doc"
   },
   "options": {
     "draftAndPublish": true
@@ -15,7 +15,7 @@
     }
   },
   "attributes": {
-    "name": {
+    "title": {
       "type": "string",
       "pluginOptions": {
         "i18n": {
@@ -25,15 +25,13 @@
       "required": true,
       "unique": true
     },
-    "slug": {
-      "type": "string",
+    "content": {
+      "type": "blocks",
       "pluginOptions": {
         "i18n": {
           "localized": true
         }
-      },
-      "required": true,
-      "unique": true
+      }
     }
   }
 }

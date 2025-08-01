@@ -1,0 +1,14 @@
+{
+  "kind": "collectionType",
+  "collectionName": "news_en_uses",
+  "info": {
+    "singularName": "news-en-us",
+    "pluralName": "news-en-uses",
+    "displayName": "NewsEnUs"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {}
+}

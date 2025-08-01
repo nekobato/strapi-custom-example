@@ -1,0 +1,21 @@
+{
+  "kind": "collectionType",
+  "collectionName": "media_lists",
+  "info": {
+    "singularName": "media-list",
+    "pluralName": "media-lists",
+    "displayName": "MediaList"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "title_type": {
+      "type": "string"
+    }
+  }
+}

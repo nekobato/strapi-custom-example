@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "media_discussions",
+  "info": {
+    "singularName": "media-discussion",
+    "pluralName": "media-discussions",
+    "displayName": "MediaDiscussion"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "owned_media_profile": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::owned-media-profile.owned-media-profile"
+    },
+    "is_left": {
+      "type": "boolean",
+      "default": false
+    },
+    "comment": {
+      "type": "text"
+    }
+  }
+}

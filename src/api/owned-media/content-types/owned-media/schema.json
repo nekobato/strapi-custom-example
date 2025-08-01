@@ -1,0 +1,14 @@
+{
+  "kind": "collectionType",
+  "collectionName": "owned_medias",
+  "info": {
+    "singularName": "owned-media",
+    "pluralName": "owned-medias",
+    "displayName": "OwnedMedia"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {}
+}
