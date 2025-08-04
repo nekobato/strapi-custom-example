@@ -10,5 +10,14 @@
     "draftAndPublish": true
   },
   "pluginOptions": {},
-  "attributes": {}
+  "attributes": {
+    "owned_medias": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::owned-media.owned-media"
+    },
+    "optional_title": {
+      "type": "string"
+    }
+  }
 }

@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "mcp__o3__o3-search",
+      "WebFetch(domain:design-system-git-main-strapijs.vercel.app)"
+    ],
+    "deny": []
+  }
+}

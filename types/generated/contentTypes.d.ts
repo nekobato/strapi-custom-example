@@ -504,7 +504,13 @@ export interface ApiDocDoc extends Struct.CollectionTypeSchema {
     };
   };
   attributes: {
-    content: Schema.Attribute.Blocks &
+    content: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      > &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -595,7 +601,13 @@ export interface ApiHrMediaHrMedia extends Struct.CollectionTypeSchema {
   };
   attributes: {
     category: Schema.Attribute.Relation<'oneToOne', 'api::category.category'>;
-    content: Schema.Attribute.Blocks &
+    content: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      > &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -610,7 +622,13 @@ export interface ApiHrMediaHrMedia extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
-    introduction: Schema.Attribute.Blocks &
+    introduction: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      > &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -763,6 +781,7 @@ export interface ApiMediaListMediaList extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    list: Schema.Attribute.JSON;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -798,7 +817,16 @@ export interface ApiMediaNoteMediaNote extends Struct.CollectionTypeSchema {
       'api::media-note.media-note'
     > &
       Schema.Attribute.Private;
+    main: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
+    note_type: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -820,13 +848,24 @@ export interface ApiMediaProductsCtaSectionMediaProductsCtaSection
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    first_button_color: Schema.Attribute.String;
+    first_button_label: Schema.Attribute.String;
+    first_button_label_color: Schema.Attribute.String;
+    first_button_url: Schema.Attribute.String;
+    first_micro_copy: Schema.Attribute.String & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::media-products-cta-section.media-products-cta-section'
     > &
       Schema.Attribute.Private;
+    product_id: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
+    second_button_color: Schema.Attribute.String;
+    second_button_label: Schema.Attribute.String;
+    second_button_label_color: Schema.Attribute.String;
+    second_button_url: Schema.Attribute.String;
+    second_micro_copy: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -844,6 +883,8 @@ export interface ApiNewNew extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    category: Schema.Attribute.Relation<'oneToOne', 'api::category.category'>;
+    content: Schema.Attribute.Text;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -851,6 +892,9 @@ export interface ApiNewNew extends Struct.CollectionTypeSchema {
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::new.new'> &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.String;
+    thumbnail: Schema.Attribute.Media<'images' | 'files'>;
+    title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -868,6 +912,8 @@ export interface ApiNewsEnUsNewsEnUs extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    category: Schema.Attribute.Relation<'oneToOne', 'api::category.category'>;
+    content: Schema.Attribute.Text;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -878,6 +924,9 @@ export interface ApiNewsEnUsNewsEnUs extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.String;
+    thumbnail: Schema.Attribute.Media<'images' | 'files'>;
+    title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -905,7 +954,9 @@ export interface ApiOwnedMediaCategoryOwnedMediaCategory
       'api::owned-media-category.owned-media-category'
     > &
       Schema.Attribute.Private;
+    name: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -924,16 +975,35 @@ export interface ApiOwnedMediaProfileOwnedMediaProfile
     draftAndPublish: true;
   };
   attributes: {
+    biography: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    description: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::owned-media-profile.owned-media-profile'
     > &
       Schema.Attribute.Private;
+    name: Schema.Attribute.String;
+    photo: Schema.Attribute.Media<'images' | 'files'>;
     publishedAt: Schema.Attribute.DateTime;
+    related_links: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
+    slug: Schema.Attribute.String;
+    title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -955,6 +1025,7 @@ export interface ApiOwnedMediaRelatedLinkOwnedMediaRelatedLink
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    image: Schema.Attribute.Media<'images' | 'files'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -962,9 +1033,11 @@ export interface ApiOwnedMediaRelatedLinkOwnedMediaRelatedLink
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    url: Schema.Attribute.String;
   };
 }
 
@@ -979,16 +1052,45 @@ export interface ApiOwnedMediaOwnedMedia extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    banner_text: Schema.Attribute.String;
+    category: Schema.Attribute.Relation<'oneToOne', 'api::category.category'>;
+    content: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    introduction: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::owned-media.owned-media'
     > &
       Schema.Attribute.Private;
+    owned_media_profile: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::owned-media-profile.owned-media-profile'
+    >;
+    owned_media_profiles: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::owned-media-profile.owned-media-profile'
+    >;
     publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.String;
+    tags: Schema.Attribute.Relation<'oneToMany', 'api::tag.tag'>;
+    thumbnail: Schema.Attribute.Media<'images' | 'files'>;
+    title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1015,6 +1117,11 @@ export interface ApiRelatedLinkRelatedLink extends Struct.CollectionTypeSchema {
       'api::related-link.related-link'
     > &
       Schema.Attribute.Private;
+    optional_title: Schema.Attribute.String;
+    owned_medias: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::owned-media.owned-media'
+    >;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1034,9 +1141,11 @@ export interface ApiSimpleImageLinkOnRichTextSimpleImageLinkOnRichText
     draftAndPublish: true;
   };
   attributes: {
+    class_name: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    image: Schema.Attribute.Media<'images' | 'files'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1044,9 +1153,11 @@ export interface ApiSimpleImageLinkOnRichTextSimpleImageLinkOnRichText
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    text: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    utl: Schema.Attribute.String;
   };
 }
 
@@ -1068,6 +1179,10 @@ export interface ApiTagTag extends Struct.CollectionTypeSchema {
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::tag.tag'> &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

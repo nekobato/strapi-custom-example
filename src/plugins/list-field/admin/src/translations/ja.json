@@ -1,0 +1,8 @@
+{
+  "list-field.label": "リストフィールド",
+  "list-field.description": "リストを管理するためのカスタムフィールド",
+  "list-field.options.placeholder.label": "プレースホルダー",
+  "list-field.options.placeholder.description": "リスト入力のプレースホルダーテキスト",
+  "list-field.options.required.label": "必須フィールド",
+  "list-field.options.required.description": "このフィールドが空の場合、エントリを作成できません"
+}

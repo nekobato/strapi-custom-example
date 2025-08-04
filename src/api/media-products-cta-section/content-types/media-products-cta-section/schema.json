@@ -10,5 +10,40 @@
     "draftAndPublish": true
   },
   "pluginOptions": {},
-  "attributes": {}
+  "attributes": {
+    "product_id": {
+      "type": "integer"
+    },
+    "first_micro_copy": {
+      "type": "string",
+      "required": true
+    },
+    "first_button_url": {
+      "type": "string"
+    },
+    "first_button_label": {
+      "type": "string"
+    },
+    "first_button_label_color": {
+      "type": "string"
+    },
+    "first_button_color": {
+      "type": "string"
+    },
+    "second_micro_copy": {
+      "type": "string"
+    },
+    "second_button_url": {
+      "type": "string"
+    },
+    "second_button_label": {
+      "type": "string"
+    },
+    "second_button_label_color": {
+      "type": "string"
+    },
+    "second_button_color": {
+      "type": "string"
+    }
+  }
 }

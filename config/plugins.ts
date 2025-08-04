@@ -12,5 +12,9 @@ export default ({ env }) => ({
         cloudflarePublicAccessUrl: env("CF_PUBLIC_ACCESS_URL")
       }
     }
+  },
+  "list-field": {
+    enabled: true,
+    resolve: "./src/plugins/list-field"
   }
 });

@@ -1,0 +1,8 @@
+{
+  "list-field.label": "List Field",
+  "list-field.description": "A custom field to manage lists",
+  "list-field.options.placeholder.label": "Placeholder",
+  "list-field.options.placeholder.description": "Placeholder text for the list input",
+  "list-field.options.required.label": "Required field",
+  "list-field.options.required.description": "You won't be able to create an entry if this field is empty"
+}

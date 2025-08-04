@@ -16,6 +16,9 @@
     },
     "title_type": {
       "type": "string"
+    },
+    "list": {
+      "type": "json"
     }
   }
 }
