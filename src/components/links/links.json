@@ -1,0 +1,109 @@
+{
+  "collectionName": "components_links_links",
+  "info": {
+    "displayName": "Links"
+  },
+  "options": {},
+  "attributes": {
+    "categories": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::category.category"
+    },
+    "components_from_rich_texts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::components-from-rich-text.components-from-rich-text"
+    },
+    "docs": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::doc.doc"
+    },
+    "hr_medias": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::hr-media.hr-media"
+    },
+    "hr_media_categories": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::hr-media-category.hr-media-category"
+    },
+    "links": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::link.link"
+    },
+    "media_discussions": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::media-discussion.media-discussion"
+    },
+    "media_galleries": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::media-gallery.media-gallery"
+    },
+    "media_lists": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::media-list.media-list"
+    },
+    "media_notes": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::media-note.media-note"
+    },
+    "media_products_cta_sections": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::media-products-cta-section.media-products-cta-section"
+    },
+    "news": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::new.new"
+    },
+    "news_en_uses": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::news-en-us.news-en-us"
+    },
+    "owned_medias": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::owned-media.owned-media"
+    },
+    "owned_media_categories": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::owned-media-category.owned-media-category"
+    },
+    "owned_media_profiles": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::owned-media-profile.owned-media-profile"
+    },
+    "owned_media_related_links": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::owned-media-related-link.owned-media-related-link"
+    },
+    "related_links": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::related-link.related-link"
+    },
+    "simple_image_link_on_rich_texts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::simple-image-link-on-rich-text.simple-image-link-on-rich-text"
+    },
+    "tags": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::tag.tag"
+    }
+  }
+}

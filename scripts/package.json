@@ -1,0 +1,21 @@
+{
+  "name": "migration-scripts",
+  "version": "1.0.0",
+  "description": "Scripts for migrating data from Contentful to Strapi",
+  "scripts": {
+    "migrate": "ts-node contentful-to-strapi.ts",
+    "migrate:dry-run": "DRY_RUN=true ts-node contentful-to-strapi.ts",
+    "validate": "ts-node validate-migration.ts",
+    "analyze": "ts-node analyze-contentful-export.ts"
+  },
+  "dependencies": {
+    "axios": "^1.11.0",
+    "dotenv": "^17.2.1",
+    "form-data": "^4.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^24.2.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}

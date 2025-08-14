@@ -1,4 +1,5 @@
-import type { StrapiApp } from '@strapi/strapi/admin';
+import type { StrapiApp } from "@strapi/strapi/admin";
+import "strapi-plugin-lexical/style.css";
 
 export default {
   config: {
@@ -29,9 +30,9 @@ export default {
       // 'vi',
       // 'zh-Hans',
       // 'zh',
-    ],
+    ]
   },
   bootstrap(app: StrapiApp) {
     console.log(app);
-  },
+  }
 };

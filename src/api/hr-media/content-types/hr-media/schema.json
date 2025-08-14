@@ -77,7 +77,7 @@
           "localized": true
         }
       },
-      "customField": "plugin::ckeditor5.CKEditor",
+      "customField": "plugin::lexical.lexical",
       "options": {
         "preset": "defaultHtml"
       }
@@ -89,10 +89,33 @@
           "localized": true
         }
       },
-      "customField": "plugin::ckeditor5.CKEditor",
+      "customField": "plugin::lexical.lexical",
       "options": {
         "preset": "defaultHtml"
       }
+    },
+    "content2": {
+      "type": "blocks",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::category.category",
+      "mappedBy": "hr_medias"
+    },
+    "published_datetime": {
+      "type": "datetime",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "required": true
     }
   }
 }

@@ -32,6 +32,10 @@
         "images",
         "files"
       ]
+    },
+    "published_datetime": {
+      "type": "datetime",
+      "required": true
     }
   }
 }

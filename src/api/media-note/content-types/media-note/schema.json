@@ -19,7 +19,7 @@
     },
     "main": {
       "type": "customField",
-      "customField": "plugin::ckeditor5.CKEditor",
+      "customField": "plugin::lexical.lexical",
       "options": {
         "preset": "defaultHtml"
       }

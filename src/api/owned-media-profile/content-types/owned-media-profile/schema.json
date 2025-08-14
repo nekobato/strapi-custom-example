@@ -14,10 +14,7 @@
     "photo": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": [
-        "images",
-        "files"
-      ]
+      "allowedTypes": ["images", "files"]
     },
     "name": {
       "type": "string"
@@ -33,14 +30,14 @@
     },
     "related_links": {
       "type": "customField",
-      "customField": "plugin::ckeditor5.CKEditor",
+      "customField": "plugin::lexical.lexical",
       "options": {
         "preset": "defaultHtml"
       }
     },
     "biography": {
       "type": "customField",
-      "customField": "plugin::ckeditor5.CKEditor",
+      "customField": "plugin::lexical.lexical",
       "options": {
         "preset": "defaultHtml"
       }

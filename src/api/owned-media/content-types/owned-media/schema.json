@@ -53,17 +53,21 @@
     },
     "introduction": {
       "type": "customField",
-      "customField": "plugin::ckeditor5.CKEditor",
+      "customField": "plugin::lexical.lexical",
       "options": {
         "preset": "defaultHtml"
       }
     },
     "content": {
       "type": "customField",
-      "customField": "plugin::ckeditor5.CKEditor",
+      "customField": "plugin::lexical.lexical",
       "options": {
         "preset": "defaultHtml"
       }
+    },
+    "published_datetime": {
+      "type": "datetime",
+      "required": true
     }
   }
 }

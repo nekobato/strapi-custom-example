@@ -1,0 +1,91 @@
+.strapi-entry-card {
+  display: inline-block;
+  position: relative;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 8px 0;
+  background: #ffffff;
+  min-width: 200px;
+  max-width: 100%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.strapi-entry-card:hover {
+  border-color: #4945ff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.strapi-entry-card.focused {
+  outline: 2px solid #4945ff;
+  outline-offset: 2px;
+}
+
+.strapi-entry-card.draggable {
+  cursor: move;
+}
+
+.strapi-entry-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.strapi-entry-card-type {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #666666;
+  background: #f0f0fa;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.strapi-entry-card-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #212134;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.strapi-entry-card-id {
+  font-size: 11px;
+  color: #8e8ea9;
+  margin-top: 4px;
+}
+
+.strapi-entry-card-status {
+  font-size: 12px;
+  margin-left: auto;
+}
+
+.strapi-entry-card-status.strapi-entry-card-error {
+  color: #d02b20;
+}
+
+.strapi-entry-card-updated {
+  font-size: 10px;
+  color: #a5a5ba;
+}
+
+.strapi-entry-card-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: #8e8ea9;
+}
+
+.strapi-entry-card-error {
+  padding: 12px;
+  background: #fff5f5;
+  border: 1px solid #ffdddd;
+  border-radius: 8px;
+  color: #d02b20;
+  font-size: 13px;
+}

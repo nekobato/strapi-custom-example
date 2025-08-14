@@ -34,6 +34,12 @@
       },
       "required": true,
       "unique": true
+    },
+    "hr_medias": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::hr-media.hr-media",
+      "inversedBy": "categories"
     }
   }
 }

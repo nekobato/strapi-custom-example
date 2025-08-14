@@ -429,6 +429,10 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    hr_medias: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::hr-media.hr-media'
+    >;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -504,9 +508,9 @@ export interface ApiDocDoc extends Struct.CollectionTypeSchema {
     };
   };
   attributes: {
-    content: Schema.Attribute.RichText &
+    content: Schema.Attribute.JSON &
       Schema.Attribute.CustomField<
-        'plugin::ckeditor5.CKEditor',
+        'plugin::lexical.lexical',
         {
           preset: 'defaultHtml';
         }
@@ -600,14 +604,24 @@ export interface ApiHrMediaHrMedia extends Struct.CollectionTypeSchema {
     };
   };
   attributes: {
+    categories: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::category.category'
+    >;
     category: Schema.Attribute.Relation<'oneToOne', 'api::category.category'>;
-    content: Schema.Attribute.RichText &
+    content: Schema.Attribute.JSON &
       Schema.Attribute.CustomField<
-        'plugin::ckeditor5.CKEditor',
+        'plugin::lexical.lexical',
         {
           preset: 'defaultHtml';
         }
       > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    content2: Schema.Attribute.Blocks &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -622,9 +636,9 @@ export interface ApiHrMediaHrMedia extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
-    introduction: Schema.Attribute.RichText &
+    introduction: Schema.Attribute.JSON &
       Schema.Attribute.CustomField<
-        'plugin::ckeditor5.CKEditor',
+        'plugin::lexical.lexical',
         {
           preset: 'defaultHtml';
         }
@@ -643,6 +657,13 @@ export interface ApiHrMediaHrMedia extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::owned-media-profile.owned-media-profile'
     >;
+    published_datetime: Schema.Attribute.DateTime &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.String &
       Schema.Attribute.Required &
@@ -817,9 +838,9 @@ export interface ApiMediaNoteMediaNote extends Struct.CollectionTypeSchema {
       'api::media-note.media-note'
     > &
       Schema.Attribute.Private;
-    main: Schema.Attribute.RichText &
+    main: Schema.Attribute.JSON &
       Schema.Attribute.CustomField<
-        'plugin::ckeditor5.CKEditor',
+        'plugin::lexical.lexical',
         {
           preset: 'defaultHtml';
         }
@@ -891,6 +912,7 @@ export interface ApiNewNew extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::new.new'> &
       Schema.Attribute.Private;
+    published_datetime: Schema.Attribute.DateTime & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.String;
     thumbnail: Schema.Attribute.Media<'images' | 'files'>;
@@ -923,6 +945,7 @@ export interface ApiNewsEnUsNewsEnUs extends Struct.CollectionTypeSchema {
       'api::news-en-us.news-en-us'
     > &
       Schema.Attribute.Private;
+    published_datetime: Schema.Attribute.DateTime & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.String;
     thumbnail: Schema.Attribute.Media<'images' | 'files'>;
@@ -975,9 +998,9 @@ export interface ApiOwnedMediaProfileOwnedMediaProfile
     draftAndPublish: true;
   };
   attributes: {
-    biography: Schema.Attribute.RichText &
+    biography: Schema.Attribute.JSON &
       Schema.Attribute.CustomField<
-        'plugin::ckeditor5.CKEditor',
+        'plugin::lexical.lexical',
         {
           preset: 'defaultHtml';
         }
@@ -995,9 +1018,9 @@ export interface ApiOwnedMediaProfileOwnedMediaProfile
     name: Schema.Attribute.String;
     photo: Schema.Attribute.Media<'images' | 'files'>;
     publishedAt: Schema.Attribute.DateTime;
-    related_links: Schema.Attribute.RichText &
+    related_links: Schema.Attribute.JSON &
       Schema.Attribute.CustomField<
-        'plugin::ckeditor5.CKEditor',
+        'plugin::lexical.lexical',
         {
           preset: 'defaultHtml';
         }
@@ -1054,9 +1077,9 @@ export interface ApiOwnedMediaOwnedMedia extends Struct.CollectionTypeSchema {
   attributes: {
     banner_text: Schema.Attribute.String;
     category: Schema.Attribute.Relation<'oneToOne', 'api::category.category'>;
-    content: Schema.Attribute.RichText &
+    content: Schema.Attribute.JSON &
       Schema.Attribute.CustomField<
-        'plugin::ckeditor5.CKEditor',
+        'plugin::lexical.lexical',
         {
           preset: 'defaultHtml';
         }
@@ -1065,9 +1088,9 @@ export interface ApiOwnedMediaOwnedMedia extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     description: Schema.Attribute.Text;
-    introduction: Schema.Attribute.RichText &
+    introduction: Schema.Attribute.JSON &
       Schema.Attribute.CustomField<
-        'plugin::ckeditor5.CKEditor',
+        'plugin::lexical.lexical',
         {
           preset: 'defaultHtml';
         }
@@ -1086,6 +1109,7 @@ export interface ApiOwnedMediaOwnedMedia extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::owned-media-profile.owned-media-profile'
     >;
+    published_datetime: Schema.Attribute.DateTime & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.String;
     tags: Schema.Attribute.Relation<'oneToMany', 'api::tag.tag'>;

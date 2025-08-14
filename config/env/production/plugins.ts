@@ -16,5 +16,9 @@ export default ({ env }) => ({
   "list-field": {
     enabled: true,
     resolve: "./src/plugins/list-field"
+  },
+  lexical: {
+    enabled: true,
+    resolve: "./src/plugins/lexical-editor-rabo"
   }
 });
