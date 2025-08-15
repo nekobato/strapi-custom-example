@@ -1,0 +1,727 @@
+[
+  {
+    "contentfulId": "news",
+    "name": "News",
+    "displayField": "title",
+    "fields": [
+      {
+        "id": "title",
+        "name": "Title",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "category",
+        "name": "Category",
+        "type": "Link",
+        "linkType": "Entry",
+        "required": true
+      },
+      {
+        "id": "publishedAt",
+        "name": "PublishedAt",
+        "type": "Date",
+        "required": true
+      },
+      {
+        "id": "slug",
+        "name": "Slug",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "content",
+        "name": "Content",
+        "type": "Text",
+        "required": false
+      },
+      {
+        "id": "thumbnail",
+        "name": "Thumbnail",
+        "type": "Link",
+        "linkType": "Asset",
+        "required": false
+      }
+    ]
+  },
+  {
+    "contentfulId": "category",
+    "name": "Category",
+    "displayField": "name",
+    "fields": [
+      {
+        "id": "name",
+        "name": "Name",
+        "type": "Symbol",
+        "required": false
+      },
+      {
+        "id": "slug",
+        "name": "Slug",
+        "type": "Symbol",
+        "required": false
+      }
+    ]
+  },
+  {
+    "contentfulId": "ownedMedia",
+    "name": "OwnedMedia",
+    "displayField": "title",
+    "fields": [
+      {
+        "id": "title",
+        "name": "Title",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "description",
+        "name": "Description",
+        "type": "Text",
+        "required": true
+      },
+      {
+        "id": "category",
+        "name": "Category",
+        "type": "Link",
+        "linkType": "Entry",
+        "required": true
+      },
+      {
+        "id": "publishedAt",
+        "name": "PublishedAt",
+        "type": "Date",
+        "required": true
+      },
+      {
+        "id": "slug",
+        "name": "Slug",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "introduction",
+        "name": "Introduction",
+        "type": "RichText",
+        "required": false
+      },
+      {
+        "id": "content",
+        "name": "Content",
+        "type": "RichText",
+        "required": true
+      },
+      {
+        "id": "thumbnail",
+        "name": "Thumbnail",
+        "type": "Link",
+        "linkType": "Asset",
+        "required": true
+      },
+      {
+        "id": "writer",
+        "name": "Writer",
+        "type": "Link",
+        "linkType": "Entry",
+        "required": true
+      },
+      {
+        "id": "reviewers",
+        "name": "Reviewers",
+        "type": "Array",
+        "required": true
+      },
+      {
+        "id": "tags",
+        "name": "Tags",
+        "type": "Array",
+        "required": false
+      },
+      {
+        "id": "bannerText",
+        "name": "BannerText",
+        "type": "Symbol",
+        "required": false
+      }
+    ]
+  },
+  {
+    "contentfulId": "author",
+    "name": "OwnedMediaProfile",
+    "displayField": "name",
+    "fields": [
+      {
+        "id": "photo",
+        "name": "photo",
+        "type": "Link",
+        "linkType": "Asset",
+        "required": false
+      },
+      {
+        "id": "name",
+        "name": "name",
+        "type": "Symbol",
+        "required": false
+      },
+      {
+        "id": "title",
+        "name": "Title",
+        "type": "Symbol",
+        "required": false
+      },
+      {
+        "id": "description",
+        "name": "description",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "relatedLinks",
+        "name": "RelatedLinks",
+        "type": "RichText",
+        "required": false
+      },
+      {
+        "id": "biography",
+        "name": "Biography",
+        "type": "RichText",
+        "required": false
+      },
+      {
+        "id": "slug",
+        "name": "slug",
+        "type": "Symbol",
+        "required": true
+      }
+    ]
+  },
+  {
+    "contentfulId": "ownedMediaCategory",
+    "name": "OwnedMediaCategory",
+    "displayField": "name",
+    "fields": [
+      {
+        "id": "name",
+        "name": "Name",
+        "type": "Symbol",
+        "required": false
+      },
+      {
+        "id": "slug",
+        "name": "Slug",
+        "type": "Symbol",
+        "required": false
+      }
+    ]
+  },
+  {
+    "contentfulId": "tags",
+    "name": "Tags",
+    "displayField": "title",
+    "fields": [
+      {
+        "id": "title",
+        "name": "Title",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "slug",
+        "name": "Slug",
+        "type": "Symbol",
+        "required": true
+      }
+    ]
+  },
+  {
+    "contentfulId": "links",
+    "name": "Links",
+    "displayField": "text",
+    "fields": [
+      {
+        "id": "text",
+        "name": "text",
+        "type": "Symbol",
+        "required": false
+      },
+      {
+        "id": "url",
+        "name": "url",
+        "type": "Symbol",
+        "required": false
+      },
+      {
+        "id": "type",
+        "name": "type",
+        "type": "Symbol",
+        "required": false
+      }
+    ]
+  },
+  {
+    "contentfulId": "ownMediaRelatedLink",
+    "name": "OwnedMediaRelatedLinks",
+    "displayField": "title",
+    "fields": [
+      {
+        "id": "title",
+        "name": "Title",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "image",
+        "name": "Image",
+        "type": "Link",
+        "linkType": "Asset",
+        "required": true
+      },
+      {
+        "id": "url",
+        "name": "url",
+        "type": "Symbol",
+        "required": true
+      }
+    ]
+  },
+  {
+    "contentfulId": "docs",
+    "name": "Docs",
+    "displayField": "title",
+    "fields": [
+      {
+        "id": "title",
+        "name": "Title",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "content",
+        "name": "Content",
+        "type": "RichText",
+        "required": true
+      }
+    ]
+  },
+  {
+    "contentfulId": "lp",
+    "name": "LP",
+    "displayField": "title",
+    "fields": [
+      {
+        "id": "title",
+        "name": "Title",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "description",
+        "name": "Description",
+        "type": "Text",
+        "required": true
+      },
+      {
+        "id": "publishedAt",
+        "name": "PublishedAt",
+        "type": "Date",
+        "required": true
+      },
+      {
+        "id": "slug",
+        "name": "Slug",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "content",
+        "name": "Content",
+        "type": "RichText",
+        "required": true
+      },
+      {
+        "id": "thumbnail",
+        "name": "Thumbnail",
+        "type": "Link",
+        "linkType": "Asset",
+        "required": false
+      },
+      {
+        "id": "lpType",
+        "name": "lpType",
+        "type": "Integer",
+        "required": true
+      }
+    ]
+  },
+  {
+    "contentfulId": "componentsFromRichText",
+    "name": "ComponentsOnRichText",
+    "displayField": "key",
+    "fields": [
+      {
+        "id": "key",
+        "name": "key",
+        "type": "Symbol",
+        "required": true
+      }
+    ]
+  },
+  {
+    "contentfulId": "ownedHrMedia",
+    "name": "HrMedia",
+    "displayField": "title",
+    "fields": [
+      {
+        "id": "title",
+        "name": "Title",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "description",
+        "name": "Description",
+        "type": "Text",
+        "required": true
+      },
+      {
+        "id": "category",
+        "name": "Category",
+        "type": "Link",
+        "linkType": "Entry",
+        "required": true
+      },
+      {
+        "id": "publishedAt",
+        "name": "PublishedAt",
+        "type": "Date",
+        "required": true
+      },
+      {
+        "id": "slug",
+        "name": "Slug",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "introduction",
+        "name": "Introduction",
+        "type": "RichText",
+        "required": false
+      },
+      {
+        "id": "content",
+        "name": "Content",
+        "type": "RichText",
+        "required": true
+      },
+      {
+        "id": "thumbnail",
+        "name": "Thumbnail",
+        "type": "Link",
+        "linkType": "Asset",
+        "required": true
+      },
+      {
+        "id": "relatedCharacters",
+        "name": "RelatedCharacters",
+        "type": "Array",
+        "required": true
+      },
+      {
+        "id": "tags",
+        "name": "Tags",
+        "type": "Array",
+        "required": false
+      }
+    ]
+  },
+  {
+    "contentfulId": "hrMediaCategory",
+    "name": "HrMediaCategory",
+    "displayField": "name",
+    "fields": [
+      {
+        "id": "name",
+        "name": "Name",
+        "type": "Symbol",
+        "required": false
+      },
+      {
+        "id": "slug",
+        "name": "Slug",
+        "type": "Symbol",
+        "required": false
+      }
+    ]
+  },
+  {
+    "contentfulId": "imageLinkOnRichText",
+    "name": "SimpleImageLinkOnRichText",
+    "displayField": "text",
+    "fields": [
+      {
+        "id": "url",
+        "name": "Url",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "text",
+        "name": "Text",
+        "type": "Symbol",
+        "required": false
+      },
+      {
+        "id": "image",
+        "name": "Image",
+        "type": "Link",
+        "linkType": "Asset",
+        "required": false
+      },
+      {
+        "id": "className",
+        "name": "ClassName",
+        "type": "Symbol",
+        "required": false
+      }
+    ]
+  },
+  {
+    "contentfulId": "mediaGallery",
+    "name": "MediaGallery",
+    "displayField": "title",
+    "fields": [
+      {
+        "id": "title",
+        "name": "Title",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "media",
+        "name": "Media",
+        "type": "Array",
+        "required": true
+      }
+    ]
+  },
+  {
+    "contentfulId": "mediaList",
+    "name": "MediaList",
+    "displayField": "title",
+    "fields": [
+      {
+        "id": "title",
+        "name": "Title",
+        "type": "Symbol",
+        "required": false
+      },
+      {
+        "id": "titleType",
+        "name": "TitleType",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "list",
+        "name": "List",
+        "type": "Array",
+        "required": true
+      },
+      {
+        "id": "listType",
+        "name": "ListType",
+        "type": "Symbol",
+        "required": true
+      }
+    ]
+  },
+  {
+    "contentfulId": "mediaDiscussion",
+    "name": "MediaDiscussion",
+    "displayField": "comment",
+    "fields": [
+      {
+        "id": "speakerPhoto",
+        "name": "SpeakerPhoto",
+        "type": "Link",
+        "linkType": "Entry",
+        "required": true
+      },
+      {
+        "id": "isLeft",
+        "name": "IsLeft",
+        "type": "Boolean",
+        "required": false
+      },
+      {
+        "id": "comment",
+        "name": "Comment",
+        "type": "Text",
+        "required": true
+      }
+    ]
+  },
+  {
+    "contentfulId": "mediaNote",
+    "name": "MediaNote",
+    "displayField": "title",
+    "fields": [
+      {
+        "id": "title",
+        "name": "Title",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "noteType",
+        "name": "NoteType",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "main",
+        "name": "Main",
+        "type": "RichText",
+        "required": false
+      }
+    ]
+  },
+  {
+    "contentfulId": "mediaProductsCtaSection",
+    "name": "MediaProductsCtaSection",
+    "displayField": "firstMicroCopy",
+    "fields": [
+      {
+        "id": "productId",
+        "name": "ProductId",
+        "type": "Integer",
+        "required": true
+      },
+      {
+        "id": "firstMicroCopy",
+        "name": "FirstMicroCopy",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "firstButtonUrl",
+        "name": "FirstButtonUrl",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "firstButtonLabel",
+        "name": "FirstButtonLabel",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "firstButtonLabelColor",
+        "name": "FirstButtonLabelColor",
+        "type": "Symbol",
+        "required": false
+      },
+      {
+        "id": "firstButtonColor",
+        "name": "FirstButtonColor",
+        "type": "Symbol",
+        "required": false
+      },
+      {
+        "id": "secondMicroCopy",
+        "name": "SecondMicroCopy",
+        "type": "Symbol",
+        "required": false
+      },
+      {
+        "id": "secondButtonUrl",
+        "name": "SecondButtonUrl",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "secondButtonLabel",
+        "name": "SecondButtonLabel",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "secondButtonLabelColor",
+        "name": "SecondButtonLabelColor",
+        "type": "Symbol",
+        "required": false
+      },
+      {
+        "id": "secondButtonColor",
+        "name": "SecondButtonColor",
+        "type": "Symbol",
+        "required": false
+      }
+    ]
+  },
+  {
+    "contentfulId": "newsEnUs",
+    "name": "News (en-US)",
+    "displayField": "title",
+    "fields": [
+      {
+        "id": "title",
+        "name": "Title",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "category",
+        "name": "Category",
+        "type": "Link",
+        "linkType": "Entry",
+        "required": true
+      },
+      {
+        "id": "publishedAt",
+        "name": "PublishedAt",
+        "type": "Date",
+        "required": true
+      },
+      {
+        "id": "slug",
+        "name": "Slug",
+        "type": "Symbol",
+        "required": true
+      },
+      {
+        "id": "content",
+        "name": "Content",
+        "type": "Text",
+        "required": false
+      },
+      {
+        "id": "thumbnail",
+        "name": "Thumbnail",
+        "type": "Link",
+        "linkType": "Asset",
+        "required": false
+      }
+    ]
+  },
+  {
+    "contentfulId": "relatedLink",
+    "name": "RelatedLinks",
+    "displayField": "optionalTitle",
+    "fields": [
+      {
+        "id": "entries",
+        "name": "Entries",
+        "type": "Array",
+        "required": true
+      },
+      {
+        "id": "optionalTitle",
+        "name": "OptionalTitle",
+        "type": "Symbol",
+        "required": false
+      }
+    ]
+  }
+]

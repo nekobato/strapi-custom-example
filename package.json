@@ -12,7 +12,14 @@
     "start": "strapi start",
     "strapi": "strapi",
     "upgrade": "npx @strapi/upgrade latest",
-    "upgrade:dry": "npx @strapi/upgrade latest --dry"
+    "upgrade:dry": "npx @strapi/upgrade latest --dry",
+    "migrate:assets": "ts-node scripts/contentful-assets-to-strapi.ts",
+    "migrate:assets:dry": "DRY_RUN=true ts-node scripts/contentful-assets-to-strapi.ts",
+    "migrate:assets:images": "ts-node scripts/contentful-assets-to-strapi.ts --type=images",
+    "migrate:assets:videos": "ts-node scripts/contentful-assets-to-strapi.ts --type=videos",
+    "migrate:assets:documents": "ts-node scripts/contentful-assets-to-strapi.ts --type=documents",
+    "migrate:content": "ts-node scripts/contentful-to-strapi.ts",
+    "migrate:content:dry": "DRY_RUN=true ts-node scripts/contentful-to-strapi.ts"
   },
   "dependencies": {
     "@strapi/plugin-cloud": "5.20.0",
@@ -29,6 +36,10 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "axios": "^1.6.2",
+    "form-data": "^4.0.0",
+    "dotenv": "^16.3.1",
+    "ts-node": "^10.9.0",
     "typescript": "^5"
   },
   "engines": {

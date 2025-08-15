@@ -37,11 +37,23 @@ import {
   StrapiImageNode,
   StrapiImagePayload,
 } from '../nodes/StrapiImageNode';
+import {
+  $createStrapiVideoNode,
+  $isStrapiVideoNode,
+  StrapiVideoNode,
+  StrapiVideoPayload,
+} from '../nodes/StrapiVideoNode';
+import { getMediaTypeFromAsset, isImageAsset, isVideoAsset } from '../utils/mediaTypeUtils';
 
 export type InsertStrapiImagePayload = Readonly<StrapiImagePayload>;
+export type InsertStrapiVideoPayload = Readonly<StrapiVideoPayload>;
 
 export const INSERT_STRAPI_IMAGE_COMMAND: LexicalCommand<InsertStrapiImagePayload> = createCommand(
   'INSERT_STRAPI_IMAGE_COMMAND'
+);
+
+export const INSERT_STRAPI_VIDEO_COMMAND: LexicalCommand<InsertStrapiVideoPayload> = createCommand(
+  'INSERT_STRAPI_VIDEO_COMMAND'
 );
 
 export function InsertStrapiImageDialog({
@@ -61,23 +73,58 @@ export function InsertStrapiImageDialog({
     try {
       if (assets.length > 0) {
         for (const asset of assets) {
-          const imagePayload: InsertStrapiImagePayload = {
-            documentId: asset.documentId,
-            src: asset.formats?.thumbnail?.url || asset.url,
-          };
-          activeEditor.dispatchCommand(INSERT_STRAPI_IMAGE_COMMAND, imagePayload);
+          const mediaType = getMediaTypeFromAsset(asset);
+          
+          if (mediaType === 'image' || isImageAsset(asset)) {
+            // 画像として挿入
+            const imagePayload: InsertStrapiImagePayload = {
+              documentId: asset.documentId,
+              src: asset.formats?.thumbnail?.url || asset.url,
+              metadata: {
+                url: asset.url,
+                alternativeText: asset.alternativeText,
+                caption: asset.caption,
+                width: asset.width,
+                height: asset.height,
+                formats: asset.formats,
+                mime: asset.mime,
+                size: asset.size,
+                updatedAt: asset.updatedAt,
+              },
+            };
+            activeEditor.dispatchCommand(INSERT_STRAPI_IMAGE_COMMAND, imagePayload);
+          } else if (mediaType === 'video' || isVideoAsset(asset)) {
+            // 動画として挿入
+            const videoPayload: InsertStrapiVideoPayload = {
+              documentId: asset.documentId,
+              src: asset.url,
+              metadata: {
+                url: asset.url,
+                alternativeText: asset.alternativeText,
+                caption: asset.caption,
+                width: asset.width,
+                height: asset.height,
+                mime: asset.mime,
+                size: asset.size,
+                updatedAt: asset.updatedAt,
+              },
+            };
+            activeEditor.dispatchCommand(INSERT_STRAPI_VIDEO_COMMAND, videoPayload);
+          } else {
+            console.warn('Unsupported media type for asset:', asset);
+          }
         }
         onClose();
       }
     } catch (err) {
-      console.log('Unable to insert images:');
+      console.log('Unable to insert media:');
       console.log(err);
     }
   };
 
   return (
     <MediaLibraryDialog
-      allowedTypes={['images']}
+      allowedTypes={['images', 'videos']}
       onClose={onClose}
       onSelectAssets={handleSelectAssets}
     />
@@ -88,8 +135,8 @@ export default function StrapiImagePlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
-    if (!editor.hasNodes([StrapiImageNode])) {
-      throw new Error('StrapiImagePlugin:  StrapiImageNode not registered on editor');
+    if (!editor.hasNodes([StrapiImageNode, StrapiVideoNode])) {
+      throw new Error('StrapiImagePlugin: StrapiImageNode and StrapiVideoNode must be registered on editor');
     }
 
     return mergeRegister(
@@ -98,6 +145,15 @@ export default function StrapiImagePlugin(): JSX.Element | null {
         (payload) => {
           const strapiImageNode = $createStrapiImageNode(payload);
           $insertNodes([strapiImageNode]);
+          return true;
+        },
+        COMMAND_PRIORITY_EDITOR
+      ),
+      editor.registerCommand<InsertStrapiVideoPayload>(
+        INSERT_STRAPI_VIDEO_COMMAND,
+        (payload) => {
+          const strapiVideoNode = $createStrapiVideoNode(payload);
+          $insertNodes([strapiVideoNode]);
           return true;
         },
         COMMAND_PRIORITY_EDITOR
@@ -135,7 +191,7 @@ const img = document.createElement('img');
 img.src = TRANSPARENT_IMAGE;
 
 function $onDragStart(event: DragEvent): boolean {
-  const node = $getImageNodeInSelection();
+  const node = $getMediaNodeInSelection();
   if (!node) {
     return false;
   }
@@ -145,43 +201,58 @@ function $onDragStart(event: DragEvent): boolean {
   }
   dataTransfer.setData('text/plain', '_');
   dataTransfer.setDragImage(img, 0, 0);
-  dataTransfer.setData(
-    'application/x-lexical-drag',
-    JSON.stringify({
-      data: {
-        key: node.getKey(),
-        src: node.__src,
-        documentId: node.__documentId,
-      },
-      type: 'image',
-    })
-  );
+  
+  if ($isStrapiImageNode(node)) {
+    dataTransfer.setData(
+      'application/x-lexical-drag',
+      JSON.stringify({
+        data: {
+          key: node.getKey(),
+          src: node.__src,
+          documentId: node.__documentId,
+        },
+        type: 'image',
+      })
+    );
+  } else if ($isStrapiVideoNode(node)) {
+    dataTransfer.setData(
+      'application/x-lexical-drag',
+      JSON.stringify({
+        data: {
+          key: node.getKey(),
+          src: node.getSrc(),
+          documentId: node.getDocumentId(),
+        },
+        type: 'video',
+      })
+    );
+  }
 
   return true;
 }
 
 function $onDragover(event: DragEvent): boolean {
-  const node = $getImageNodeInSelection();
+  const node = $getMediaNodeInSelection();
   if (!node) {
     return false;
   }
-  if (!canDropImage(event)) {
+  if (!canDropMedia(event)) {
     event.preventDefault();
   }
   return true;
 }
 
 function $onDrop(event: DragEvent, editor: LexicalEditor): boolean {
-  const node = $getImageNodeInSelection();
+  const node = $getMediaNodeInSelection();
   if (!node) {
     return false;
   }
-  const data = getDragImageData(event);
+  const data = getDragMediaData(event);
   if (!data) {
     return false;
   }
   event.preventDefault();
-  if (canDropImage(event)) {
+  if (canDropMedia(event)) {
     const range = getDragSelection(event);
     node.remove();
     const rangeSelection = $createRangeSelection();
@@ -189,32 +260,40 @@ function $onDrop(event: DragEvent, editor: LexicalEditor): boolean {
       rangeSelection.applyDOMRange(range);
     }
     $setSelection(rangeSelection);
-    editor.dispatchCommand(INSERT_STRAPI_IMAGE_COMMAND, data);
+    
+    // データのタイプに応じて適切なコマンドを発行
+    if (data.type === 'image') {
+      editor.dispatchCommand(INSERT_STRAPI_IMAGE_COMMAND, data.payload as InsertStrapiImagePayload);
+    } else if (data.type === 'video') {
+      editor.dispatchCommand(INSERT_STRAPI_VIDEO_COMMAND, data.payload as InsertStrapiVideoPayload);
+    }
   }
   return true;
 }
 
-function $getImageNodeInSelection(): StrapiImageNode | null {
+function $getMediaNodeInSelection(): StrapiImageNode | StrapiVideoNode | null {
   const selection = $getSelection();
   if (!$isNodeSelection(selection)) {
     return null;
   }
   const nodes = selection.getNodes();
   const node = nodes[0];
-  return $isStrapiImageNode(node) ? node : null;
+  if ($isStrapiImageNode(node)) return node;
+  if ($isStrapiVideoNode(node)) return node;
+  return null;
 }
 
-function getDragImageData(event: DragEvent): null | InsertStrapiImagePayload {
+function getDragMediaData(event: DragEvent): null | { type: 'image' | 'video', payload: InsertStrapiImagePayload | InsertStrapiVideoPayload } {
   const dragData = event.dataTransfer?.getData('application/x-lexical-drag');
   if (!dragData) {
     return null;
   }
   const { type, data } = JSON.parse(dragData);
-  if (type !== 'image') {
+  if (type !== 'image' && type !== 'video') {
     return null;
   }
 
-  return data;
+  return { type, payload: data };
 }
 
 declare global {
@@ -224,11 +303,11 @@ declare global {
   }
 }
 
-function canDropImage(event: DragEvent): boolean {
+function canDropMedia(event: DragEvent): boolean {
   const target = event.target;
   return !!(
     isHTMLElement(target) &&
-    !target.closest('code, span.editor-image') &&
+    !target.closest('code, span.editor-image, span.editor-video') &&
     isHTMLElement(target.parentElement) &&
     target.parentElement.closest('div.ContentEditable__root')
   );

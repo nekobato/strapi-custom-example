@@ -27,7 +27,69 @@ DRY_RUN=false
 
 ## スクリプト
 
-### 1. Analysis Script (`analyze-contentful-export.ts`)
+### 1. Asset Migration Tool (`contentful-assets-to-strapi.ts`) ⭐ NEW
+
+Contentful からエクスポートしたアセット（画像、動画、PDF等）のみを Strapi に移行する専用ツールです。
+
+#### 実行コマンド
+
+```bash
+# 全アセットを移行
+pnpm run migrate:assets
+
+# ドライラン（実際のアップロードは行わない）
+pnpm run migrate:assets:dry
+
+# 画像のみ移行
+pnpm run migrate:assets:images
+
+# 動画のみ移行
+pnpm run migrate:assets:videos
+
+# PDF・ドキュメントのみ移行
+pnpm run migrate:assets:documents
+
+# カスタムオプション付き実行
+ts-node scripts/contentful-assets-to-strapi.ts --type=images --parallel=5 --retries=3 --dry-run
+```
+
+#### 機能
+
+- **ファイルタイプフィルタリング**: 画像、動画、ドキュメント別に移行可能
+- **並列アップロード**: 最大5ファイル同時処理（設定可能）
+- **リトライ機能**: 失敗したファイルの自動再試行
+- **メタデータ保持**: タイトル、説明、代替テキストを保持
+- **詳細な統計情報**: 成功率、ファイルタイプ別結果
+- **出力ファイル**:
+  - `asset-mapping-{timestamp}.json`: Contentful ID → Strapi ID マッピング
+  - `failed-assets-{timestamp}.json`: 失敗したアセットのリスト
+  - `asset-migration-log-{timestamp}.json`: 詳細ログ
+
+#### オプション
+
+- `--type=images|videos|documents|all`: 移行するファイルタイプ
+- `--parallel=N`: 同時並列処理数（デフォルト: 3）
+- `--retries=N`: リトライ回数（デフォルト: 2）
+- `--dry-run`: ドライラン実行
+
+### 2. Mapping Template Generator (`generate-mapping-template.ts`)
+
+Contentful のエクスポートデータから、Content Type とフィールドのマッピングテンプレートを自動生成します。
+
+#### 実行コマンド
+
+```bash
+pnpm run generate-mapping
+```
+
+#### 使用方法
+
+1. テンプレート生成後、`content-mapping-template.ts` ファイルが作成されます
+2. ファイル内の `strapiId` を実際の Strapi での命名に合わせて修正
+3. フィールドマッピングも必要に応じて調整
+4. `content-mapping.ts` を置き換える
+
+### 2. Analysis Script (`analyze-contentful-export.ts`)
 
 Contentful エクスポートファイルの内容を解析し、統計情報を出力します。
 
@@ -44,32 +106,36 @@ pnpm run analyze
 - アセット分析（ファイルタイプ、サイズ、タイトル/説明の有無）
 - サンプルデータ表示
 
-### 2. Migration Script (`contentful-to-strapi.ts`)
+### 2. Content & Entry Migration Script (`contentful-to-strapi.ts`)
 
-Contentful のエクスポートデータを Strapi にインポートします。
+Contentful のコンテンツタイプとエントリデータを Strapi にインポートします。
 
 #### 実行コマンド
 
 ```bash
-# 実際のマイグレーションを実行
-pnpm run migrate
+# コンテンツとエントリの移行を実行
+pnpm run migrate:content
 
 # ドライラン（実際の操作は行わず、ログのみ出力）
-pnpm run migrate:dry-run
+pnpm run migrate:content:dry
 ```
 
 #### 処理内容
 
-1. **アセット移行**: 
-   - `backup/images.ctfassets.net/kxe5qiticei6/` - 画像ファイル
-   - `backup/videos.ctfassets.net/kxe5qiticei6/` - 動画ファイル  
-   - `backup/downloads.ctfassets.net/kxe5qiticei6/` - ダウンロードファイル
-   - `backup/assets.ctfassets.net/kxe5qiticei6/` - PDFなどのドキュメント
-   - **画像のタイトルと説明も含めて移行**
-
+1. **アセットマッピング読み込み**: 事前に実行したアセット移行の結果を参照
 2. **コンテンツタイプ作成**: Contentful のコンテンツタイプを Strapi のスキーマに変換
+3. **エントリ移行**: すべてのエントリデータを Strapi に移行（アセット参照を解決）
 
-3. **エントリ移行**: すべてのエントリデータを Strapi に移行
+#### 注意事項
+
+このスクリプトを実行する前に、必ずアセット移行を完了させてください：
+```bash
+# 1. まずアセットを移行
+pnpm run migrate:assets
+
+# 2. 次にコンテンツとエントリを移行
+pnpm run migrate:content
+```
 
 #### フィールドタイプのマッピング
 
@@ -107,25 +173,48 @@ pnpm run validate
 
 ### 基本的な手順
 
-1. **データ解析**:
+1. **マッピングテンプレート生成** (初回のみ):
+```bash
+pnpm run generate-mapping
+```
+
+2. **マッピング設定の編集**:
+生成された `content-mapping-template.ts` を編集し、`content-mapping.ts` に置き換える
+
+3. **データ解析**:
 ```bash
 pnpm run analyze
 ```
 
-2. **ドライラン実行**:
+4. **アセット移行** (2段階移行 - ステップ1):
 ```bash
-pnpm run migrate:dry-run
+# ドライラン
+pnpm run migrate:assets:dry
+
+# 実際の移行
+pnpm run migrate:assets
 ```
 
-3. **実際のマイグレーション実行**:
+5. **コンテンツ・エントリ移行** (2段階移行 - ステップ2):
 ```bash
-pnpm run migrate
+# ドライラン
+pnpm run migrate:content:dry
+
+# 実際の移行
+pnpm run migrate:content
 ```
 
-4. **結果の検証**:
+6. **結果の検証**:
 ```bash
 pnpm run validate
 ```
+
+### 🔄 2段階移行のメリット
+
+- **独立実行**: アセットとコンテンツを別々に移行可能
+- **エラー分離**: 問題が発生した場合、影響範囲を特定しやすい
+- **再実行容易**: 失敗した部分のみ再実行可能
+- **並列処理**: アセット移行は並列処理で高速化
 
 ### 設定オプション
 
@@ -134,6 +223,50 @@ pnpm run validate
 
 #### ログファイル
 マイグレーション実行時に `migration-log-{timestamp}.json` ファイルが作成され、詳細なログが保存されます。
+
+## Content Type とフィールドのマッピング
+
+### マッピング設定ファイル (`content-mapping.ts`)
+
+Contentful と Strapi で Content Type 名やフィールド名が異なる場合のマッピング設定ファイルです。
+
+#### 設定例
+
+```typescript
+export const CONTENT_TYPE_MAPPINGS: ContentTypeMapping[] = [
+  {
+    contentfulId: 'blogPost',           // Contentful での ID
+    strapiId: 'blog-post',              // Strapi での ID
+    displayName: 'Blog Post',
+    fieldMappings: [
+      { contentfulField: 'title', strapiField: 'title' },
+      { contentfulField: 'bodyText', strapiField: 'content' },
+      { contentfulField: 'publishDate', strapiField: 'publishedAt' },
+      { 
+        contentfulField: 'tags', 
+        strapiField: 'tags',
+        skipMigration: true  // このフィールドは移行しない
+      },
+      { 
+        contentfulField: 'status', 
+        strapiField: 'status',
+        customTransform: (value) => value.toLowerCase()  // カスタム変換
+      }
+    ]
+  }
+];
+```
+
+#### フィールドオプション
+
+- `skipMigration`: `true` にすると、そのフィールドは移行されません
+- `customTransform`: 値をカスタム変換する関数を指定できます
+
+### マッピングテンプレートの自動生成
+
+1. `pnpm run generate-mapping` でテンプレートを生成
+2. 生成された `content-mapping-template.ts` を編集
+3. `content-mapping.ts` に名前を変更
 
 ## 注意事項
 

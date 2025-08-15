@@ -1,9 +1,16 @@
 import fs from 'fs/promises';
 import path from 'path';
 import axios from 'axios';
-import FormData from 'form-data';
 import { config } from 'dotenv';
-import { findAssetFile, formatFileSize, getMimeTypeFromExtension } from './file-utils';
+import { 
+  getStrapiContentTypeId, 
+  getStrapiFieldName, 
+  shouldMigrateField, 
+  applyFieldTransform,
+  printMappings,
+  validateMappings,
+  findUnmappedContentTypes
+} from './content-mapping';
 
 // 環境変数を読み込み
 config({ path: '.env' });
@@ -11,7 +18,6 @@ config({ path: '.env' });
 interface ContentfulExport {
   contentTypes: ContentfulContentType[];
   entries: ContentfulEntry[];
-  assets: ContentfulAsset[];
   locales: ContentfulLocale[];
 }
 
@@ -51,30 +57,6 @@ interface ContentfulEntry {
   fields: Record<string, any>;
 }
 
-interface ContentfulAsset {
-  sys: {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    publishedAt?: string;
-  };
-  fields: {
-    title?: Record<string, string>;
-    description?: Record<string, string>;
-    file: Record<string, {
-      url: string;
-      details: {
-        size: number;
-        image?: {
-          width: number;
-          height: number;
-        };
-      };
-      fileName: string;
-      contentType: string;
-    }>;
-  };
-}
 
 interface ContentfulLocale {
   code: string;
@@ -153,131 +135,42 @@ class ContentfulToStrapiMigrator {
     }
   }
 
-  private async uploadAsset(asset: ContentfulAsset): Promise<string | null> {
-    const locale = Object.keys(asset.fields.file)[0] || 'en-US';
-    const fileData = asset.fields.file[locale];
+  private async loadAssetMapping(): Promise<Map<string, string>> {
+    const assetMapping = new Map<string, string>();
     
-    if (!fileData) {
-      this.log(`No file data found for asset ${asset.sys.id}`);
-      return null;
-    }
-
-    // ファイルパスを決定（新しいユーティリティ関数を使用）
-    const searchDirs = [
-      path.join(this.backupPath, 'images.ctfassets.net/kxe5qiticei6'),
-      path.join(this.backupPath, 'videos.ctfassets.net/kxe5qiticei6'),
-      path.join(this.backupPath, 'downloads.ctfassets.net/kxe5qiticei6'),
-      path.join(this.backupPath, 'assets.ctfassets.net/kxe5qiticei6')
-    ];
-
-    const fileSearchResult = await findAssetFile(asset.sys.id, fileData.fileName, searchDirs);
-    
-    if (!fileSearchResult.found || !fileSearchResult.filePath) {
-      this.log(`File not found for asset ${asset.sys.id} (${fileData.fileName})`);
-      return null;
-    }
-
     try {
-      if (this.dryRun) {
-        this.log(`DRY RUN: Would upload asset ${asset.sys.id} from ${fileSearchResult.filePath}`);
-        this.log(`  Original filename: ${fileData.fileName}`);
-        this.log(`  Found filename: ${fileSearchResult.actualFileName}`);
-        this.log(`  Size: ${formatFileSize(fileData.details.size)}`);
-        
-        // タイトルと説明の情報もログ出力
-        if (asset.fields.title) {
-          const titleLocales = Object.keys(asset.fields.title);
-          titleLocales.forEach(loc => {
-            if (asset.fields.title?.[loc]) {
-              this.log(`  Title (${loc}): ${asset.fields.title[loc]}`);
-            }
-          });
-        }
-        
-        if (asset.fields.description) {
-          const descLocales = Object.keys(asset.fields.description);
-          descLocales.forEach(loc => {
-            if (asset.fields.description?.[loc]) {
-              this.log(`  Description (${loc}): ${asset.fields.description[loc].substring(0, 100)}...`);
-            }
-          });
-        }
-        
-        return 'dummy-upload-id';
+      // 最新のアセットマッピングファイルを探す
+      const files = await fs.readdir(__dirname);
+      const mappingFiles = files.filter(file => file.startsWith('asset-mapping-') && file.endsWith('.json'));
+      
+      if (mappingFiles.length === 0) {
+        this.log('No asset mapping file found. Asset references will be skipped.');
+        this.log('Run asset migration first: npm run migrate:assets');
+        return assetMapping;
       }
-
-      // ファイルをFormDataとしてアップロード
-      const form = new FormData();
-      const fileStream = await fs.readFile(fileSearchResult.filePath);
       
-      // MIMEタイプを推定（Contentfulのデータまたはファイル拡張子から）
-      const contentType = fileData.contentType || getMimeTypeFromExtension(fileData.fileName);
+      // 最新のファイルを選択（ファイル名のタイムスタンプでソート）
+      mappingFiles.sort((a, b) => b.localeCompare(a));
+      const latestMappingFile = mappingFiles[0];
       
-      form.append('files', fileStream, {
-        filename: fileData.fileName,
-        contentType: contentType,
+      const mappingPath = path.join(__dirname, latestMappingFile);
+      const content = await fs.readFile(mappingPath, 'utf-8');
+      const mappingData = JSON.parse(content);
+      
+      Object.entries(mappingData).forEach(([contentfulId, strapiId]) => {
+        assetMapping.set(contentfulId, strapiId as string);
       });
-
-      // タイトルと代替テキストの情報を追加
-      const fileInfo: any = {};
       
-      if (asset.fields.title) {
-        const titleLocale = Object.keys(asset.fields.title)[0];
-        if (asset.fields.title[titleLocale]) {
-          fileInfo.name = asset.fields.title[titleLocale];
-          fileInfo.alternativeText = asset.fields.title[titleLocale];
-        }
-      }
+      this.log(`Loaded asset mapping from: ${latestMappingFile} (${assetMapping.size} assets)`);
       
-      if (asset.fields.description) {
-        const descLocale = Object.keys(asset.fields.description)[0];
-        if (asset.fields.description[descLocale]) {
-          fileInfo.caption = asset.fields.description[descLocale];
-        }
-      }
-
-      // Contentful IDも保存
-      fileInfo.contentfulId = asset.sys.id;
-
-      // ファイル情報をフォームデータに追加
-      if (Object.keys(fileInfo).length > 0) {
-        form.append('fileInfo', JSON.stringify(fileInfo));
-      }
-
-      const uploadResponse = await axios.post(`${this.strapiUrl}/api/upload`, form, {
-        headers: {
-          'Authorization': `Bearer ${this.strapiToken}`,
-          ...form.getHeaders(),
-        },
-      });
-
-      const uploadedFile = uploadResponse.data[0];
-      this.log(`Uploaded asset ${asset.sys.id} -> Strapi ID: ${uploadedFile.id}`);
-      
-      // タイトルがある場合は追加でログ出力
-      if (asset.fields.title) {
-        const titleLocale = Object.keys(asset.fields.title)[0];
-        if (asset.fields.title[titleLocale]) {
-          this.log(`  Title: ${asset.fields.title[titleLocale]}`);
-        }
-      }
-      
-      // アップロード後にメタデータを更新
-      if (Object.keys(fileInfo).length > 0) {
-        try {
-          await this.strapiRequest('PUT', `/upload/files/${uploadedFile.id}`, fileInfo);
-          this.log(`Updated metadata for asset ${asset.sys.id}`);
-        } catch (error) {
-          this.log(`Warning: Could not update metadata for asset ${asset.sys.id}:`, error);
-        }
-      }
-      
-      return uploadedFile.id;
     } catch (error) {
-      this.log(`Error uploading asset ${asset.sys.id}:`, error);
-      return null;
+      this.log('Warning: Could not load asset mapping file:', error);
+      this.log('Asset references will be skipped. Run asset migration first: npm run migrate:assets');
     }
+    
+    return assetMapping;
   }
+
 
   private mapContentfulFieldToStrapi(field: ContentfulField): any {
     const strapiField: any = {
@@ -340,18 +233,27 @@ class ContentfulToStrapiMigrator {
   }
 
   private async createStrapiContentType(contentType: ContentfulContentType): Promise<void> {
+    const strapiContentTypeId = getStrapiContentTypeId(contentType.sys.id);
+    
     const strapiSchema = {
       displayName: contentType.name,
-      singularName: contentType.sys.id.toLowerCase(),
-      pluralName: contentType.sys.id.toLowerCase() + 's',
+      singularName: strapiContentTypeId,
+      pluralName: strapiContentTypeId + 's',
       description: `Migrated from Contentful: ${contentType.name}`,
-      collectionName: contentType.sys.id.toLowerCase(),
+      collectionName: strapiContentTypeId,
       attributes: {} as Record<string, any>,
     };
 
     // フィールドをマッピング
     for (const field of contentType.fields) {
-      strapiSchema.attributes[field.id] = this.mapContentfulFieldToStrapi(field);
+      // マッピング設定でスキップ対象かチェック
+      if (!shouldMigrateField(contentType.sys.id, field.id)) {
+        this.log(`Skipping field ${field.id} for content type ${contentType.sys.id} (configured to skip)`);
+        continue;
+      }
+
+      const strapiFieldName = getStrapiFieldName(contentType.sys.id, field.id);
+      strapiSchema.attributes[strapiFieldName] = this.mapContentfulFieldToStrapi(field);
     }
 
     // Contentful IDの保存用フィールドを追加
@@ -360,7 +262,7 @@ class ContentfulToStrapiMigrator {
       unique: true,
     };
 
-    this.log(`Creating content type: ${contentType.name}`, strapiSchema);
+    this.log(`Creating content type: ${contentType.name} (${contentType.sys.id} → ${strapiContentTypeId})`, strapiSchema);
 
     try {
       await this.strapiRequest('POST', '/content-type-builder/content-types', {
@@ -378,15 +280,24 @@ class ContentfulToStrapiMigrator {
   }
 
   private async migrateEntry(entry: ContentfulEntry, assetMapping: Map<string, string>): Promise<void> {
-    const contentTypeId = entry.sys.contentType.sys.id;
+    const contentfulContentTypeId = entry.sys.contentType.sys.id;
+    const strapiContentTypeId = getStrapiContentTypeId(contentfulContentTypeId);
     
     // フィールドデータを変換
     const strapiData: Record<string, any> = {
       contentfulId: entry.sys.id,
     };
 
-    for (const [fieldId, fieldValue] of Object.entries(entry.fields)) {
+    for (const [contentfulFieldId, fieldValue] of Object.entries(entry.fields)) {
       if (!fieldValue) continue;
+
+      // マッピング設定でスキップ対象かチェック
+      if (!shouldMigrateField(contentfulContentTypeId, contentfulFieldId)) {
+        this.log(`Skipping field ${contentfulFieldId} for entry ${entry.sys.id} (configured to skip)`);
+        continue;
+      }
+
+      const strapiFieldId = getStrapiFieldName(contentfulContentTypeId, contentfulFieldId);
 
       // ロケール対応の値を取得
       let value = fieldValue;
@@ -394,24 +305,27 @@ class ContentfulToStrapiMigrator {
         value = fieldValue['en-US'];
       }
 
+      // カスタム変換を適用
+      value = applyFieldTransform(contentfulContentTypeId, contentfulFieldId, value);
+
       // リンク（関連）フィールドの処理
       if (value && typeof value === 'object' && value.sys) {
         if (value.sys.linkType === 'Asset') {
           // アセット参照をStrapi IDに変換
           const strapiAssetId = assetMapping.get(value.sys.id);
           if (strapiAssetId) {
-            strapiData[fieldId] = strapiAssetId;
+            strapiData[strapiFieldId] = strapiAssetId;
           }
         } else if (value.sys.linkType === 'Entry') {
           // エントリ参照は後で解決（まず contentfulId を保存）
-          strapiData[fieldId] = {
+          strapiData[strapiFieldId] = {
             contentfulId: value.sys.id,
             contentType: value.sys.linkType,
           };
         }
       } else if (Array.isArray(value)) {
         // 配列の場合の処理
-        strapiData[fieldId] = value.map(item => {
+        strapiData[strapiFieldId] = value.map(item => {
           if (item && typeof item === 'object' && item.sys) {
             if (item.sys.linkType === 'Asset') {
               return assetMapping.get(item.sys.id);
@@ -425,14 +339,14 @@ class ContentfulToStrapiMigrator {
           return item;
         });
       } else {
-        strapiData[fieldId] = value;
+        strapiData[strapiFieldId] = value;
       }
     }
 
-    this.log(`Migrating entry ${entry.sys.id} to content type ${contentTypeId}`, strapiData);
+    this.log(`Migrating entry ${entry.sys.id} to content type ${contentfulContentTypeId} → ${strapiContentTypeId}`, strapiData);
 
     try {
-      await this.strapiRequest('POST', `/${contentTypeId}`, { data: strapiData });
+      await this.strapiRequest('POST', `/${strapiContentTypeId}`, { data: strapiData });
       this.log(`Successfully migrated entry ${entry.sys.id}`);
     } catch (error) {
       this.log(`Error migrating entry ${entry.sys.id}:`, error);
@@ -443,26 +357,28 @@ class ContentfulToStrapiMigrator {
     try {
       this.log('Starting Contentful to Strapi migration...');
       
+      // マッピング設定の検証と表示
+      const validation = validateMappings();
+      if (!validation.valid) {
+        this.log('Mapping validation failed:', validation.errors);
+        throw new Error('Invalid mapping configuration');
+      }
+      
+      printMappings();
+      
       // Contentfulデータを読み込み
       const contentfulData = await this.loadContentfulData();
-      this.log(`Loaded Contentful data: ${contentfulData.contentTypes.length} content types, ${contentfulData.entries.length} entries, ${contentfulData.assets.length} assets`);
+      this.log(`Loaded Contentful data: ${contentfulData.contentTypes.length} content types, ${contentfulData.entries.length} entries`);
 
-      // アセットをアップロード
-      this.log('Starting asset migration...');
-      const assetMapping = new Map<string, string>();
-      
-      for (const asset of contentfulData.assets) {
-        try {
-          const strapiAssetId = await this.uploadAsset(asset);
-          if (strapiAssetId) {
-            assetMapping.set(asset.sys.id, strapiAssetId);
-          }
-        } catch (error) {
-          this.log(`Error uploading asset ${asset.sys.id}:`, error);
-        }
+      // マッピングされていないContent Typeを検出
+      const unmappedTypes = findUnmappedContentTypes(contentfulData.contentTypes);
+      if (unmappedTypes.length > 0) {
+        this.log(`Warning: Found unmapped content types: ${unmappedTypes.join(', ')}`);
+        this.log('These will use default naming. Consider adding mappings to content-mapping.ts');
       }
 
-      this.log(`Asset migration completed. ${assetMapping.size}/${contentfulData.assets.length} assets uploaded successfully.`);
+      // アセットマッピングを読み込み（事前にアセット移行が完了している前提）
+      const assetMapping = await this.loadAssetMapping();
 
       // コンテンツタイプを作成
       this.log('Starting content type migration...');

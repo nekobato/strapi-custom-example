@@ -2,6 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import axios from 'axios';
 import { config } from 'dotenv';
+import { getStrapiContentTypeId, printMappings } from './content-mapping';
 
 // 環境変数を読み込み
 config({ path: '.env' });
@@ -76,6 +77,9 @@ class MigrationValidator {
     };
 
     try {
+      console.log('Checking content type mappings...');
+      printMappings();
+      
       console.log('Loading Contentful data...');
       const contentfulData = await this.loadContentfulData();
 
@@ -103,12 +107,15 @@ class MigrationValidator {
 
     for (const contentType of contentTypes) {
       try {
+        // マッピングを考慮したStrapi Content Type IDを取得
+        const strapiContentTypeId = getStrapiContentTypeId(contentType.sys.id);
+        
         // Strapiでコンテンツタイプの存在確認
-        await this.strapiRequest(`/content-type-builder/content-types/${contentType.sys.id}`);
+        await this.strapiRequest(`/content-type-builder/content-types/${strapiContentTypeId}`);
         result.contentTypes.migrated++;
       } catch (error: any) {
         if (error.response?.status === 404) {
-          result.contentTypes.missing.push(contentType.sys.id);
+          result.contentTypes.missing.push(`${contentType.sys.id} → ${getStrapiContentTypeId(contentType.sys.id)}`);
         } else {
           result.errors.push(`Error checking content type ${contentType.sys.id}: ${error.message}`);
         }
@@ -121,17 +128,19 @@ class MigrationValidator {
 
     // コンテンツタイプ別にエントリをグループ化
     const entriesByType = entries.reduce((acc, entry) => {
-      const contentType = entry.sys.contentType.sys.id;
-      if (!acc[contentType]) {
-        acc[contentType] = [];
+      const contentfulContentType = entry.sys.contentType.sys.id;
+      const strapiContentType = getStrapiContentTypeId(contentfulContentType);
+      
+      if (!acc[strapiContentType]) {
+        acc[strapiContentType] = [];
       }
-      acc[contentType].push(entry);
+      acc[strapiContentType].push(entry);
       return acc;
     }, {});
 
-    for (const [contentType, typeEntries] of Object.entries(entriesByType)) {
+    for (const [strapiContentType, typeEntries] of Object.entries(entriesByType)) {
       try {
-        const strapiEntries = await this.strapiRequest(`/${contentType}`);
+        const strapiEntries = await this.strapiRequest(`/${strapiContentType}`);
         const strapiContentfulIds = new Set(
           strapiEntries.data?.map((entry: any) => entry.attributes.contentfulId) || []
         );
@@ -140,17 +149,19 @@ class MigrationValidator {
           if (strapiContentfulIds.has(entry.sys.id)) {
             result.entries.migrated++;
           } else {
-            result.entries.missing.push(`${contentType}:${entry.sys.id}`);
+            const contentfulContentType = entry.sys.contentType.sys.id;
+            result.entries.missing.push(`${contentfulContentType}→${strapiContentType}:${entry.sys.id}`);
           }
         }
       } catch (error: any) {
         if (error.response?.status === 404) {
           // コンテンツタイプが存在しない場合、そのエントリはすべて欠落扱い
           for (const entry of typeEntries as any[]) {
-            result.entries.missing.push(`${contentType}:${entry.sys.id}`);
+            const contentfulContentType = entry.sys.contentType.sys.id;
+            result.entries.missing.push(`${contentfulContentType}→${strapiContentType}:${entry.sys.id}`);
           }
         } else {
-          result.errors.push(`Error checking entries for ${contentType}: ${error.message}`);
+          result.errors.push(`Error checking entries for ${strapiContentType}: ${error.message}`);
         }
       }
     }

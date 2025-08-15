@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
+import { printMappings, findUnmappedContentTypes } from './content-mapping';
 
 interface ContentfulExport {
   contentTypes: any[];
@@ -45,6 +46,17 @@ class ContentfulExportAnalyzer {
     data.locales.forEach(locale => {
       console.log(`  ${locale.code} - ${locale.name} ${locale.default ? '(default)' : ''}`);
     });
+
+    // マッピング情報表示
+    printMappings();
+
+    // マッピングされていないContent Typeを表示
+    const unmappedTypes = findUnmappedContentTypes(data.contentTypes);
+    if (unmappedTypes.length > 0) {
+      console.log('\n⚠️  Unmapped Content Types (will use default naming):');
+      unmappedTypes.forEach(type => console.log(`  - ${type}`));
+      console.log('Consider adding these to content-mapping.ts\n');
+    }
 
     // コンテンツタイプ分析
     console.log('\nContent Types:');

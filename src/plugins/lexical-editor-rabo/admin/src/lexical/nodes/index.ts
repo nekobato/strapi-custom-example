@@ -27,6 +27,7 @@ import { EquationNode } from './EquationNode';
 import { FigmaNode } from './FigmaNode';
 import { ImageNode } from './ImageNode';
 import { StrapiImageNode } from './StrapiImageNode';
+import { StrapiVideoNode } from './StrapiVideoNode';
 import { StrapiEntryNode } from './StrapiEntryNode';
 import { InlineImageNode } from './InlineImageNode/InlineImageNode';
 import { KeywordNode } from './KeywordNode';
@@ -76,6 +77,7 @@ const Nodes: Array<Klass<LexicalNode>> = [
   LayoutItemNode,
   SpecialTextNode,
   StrapiImageNode,
+  StrapiVideoNode,
   StrapiEntryNode,
 ];
 
